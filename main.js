@@ -77,6 +77,8 @@ async function loadShaderProgram(index) {
 
 	// Set the global program reference to the new program.
 	program = newProgram;
+	// Update the displayed fragment shader filename.
+	document.getElementById('shaderName').textContent = shaders[currentShaderIndex];
 }
 
 async function init() {
