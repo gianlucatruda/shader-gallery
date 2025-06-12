@@ -9,7 +9,9 @@ This setup allows multiple shader examples loaded from the `frag/` directory, ha
 This project is a simple, extensiple "vanilla" static site. The project uses multiple shader examples stored in the `frag/` directory (along with a fixed `vertexShader.glsl`). Shader editing is live—changes in the integrated CodeMirror editor will update the shader immediately (after validation) on a high-DPI, responsive canvas.
 
 
-![SCR-20250612-pbop](https://github.com/user-attachments/assets/e255f922-08c1-4f2e-ba73-29da216b6462)
+<img height="400" alt="SCR-20250612-prdu" src="https://github.com/user-attachments/assets/2c9524d1-c5f4-4a75-b57d-8759efd95218" />
+<img height="400" alt="SCR-20250612-prht" src="https://github.com/user-attachments/assets/1b8546d8-4917-4369-9526-b873efe1da1a" />
+
 
 
 I mimicked the Shadertoy API, so any straightforward shaders (with no assets) from there can be copy-pasted to and from this project in a `/frag/<shadername>.glsl` file:
