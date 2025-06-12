@@ -1,22 +1,11 @@
 console.log("Main.js");
 
 async function fetchShaderList() {
-  const response = await fetch('frag/');
+  const response = await fetch('frag/manifest.json');
   if (!response.ok) {
-    throw new Error('Failed to fetch shader directory');
+    throw new Error('Failed to fetch shader manifest');
   }
-  const text = await response.text();
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(text, 'text/html');
-  const anchors = doc.querySelectorAll('a');
-  const shaderList = [];
-  anchors.forEach((anchor) => {
-    const href = anchor.getAttribute('href');
-    // Exclude parent directory links and only include .glsl files.
-    if (href && href !== "../" && href.endsWith('.glsl')) {
-      shaderList.push(href);
-    }
-  });
+  const shaderList = await response.json();
   return shaderList.sort();  // sort alphabetically
 }
 
@@ -64,7 +53,7 @@ async function fetchShader(url) {
 
 async function loadShaderProgram(index) {
 	// Fetch the fragment shader.
-	const fragmentShaderSource = await fetchShader(shaders[index]);
+	const fragmentShaderSource = await fetchShader('frag/' + shaders[index]);
 	const vertexShaderSource = await fetchShader('vertexShader.glsl');
 	cachedVertexShaderSource = vertexShaderSource;
 
