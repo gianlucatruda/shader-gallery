@@ -26,6 +26,7 @@ let editorTimeout = null;
 let gl, canvas, vertexBuffer, program;
 let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
 let startTime = 0;
+let editor = null;
 
 function createShader(gl, type, source) {
 	const shader = gl.createShader(type);
@@ -95,8 +96,10 @@ async function loadShaderProgram(index) {
 	program = newProgram;
 	// Update the displayed fragment shader filename.
 	document.getElementById('shaderName').textContent = shaders[currentShaderIndex];
-	// Update the editable shader source
-	document.getElementById('shaderEditor').value = fragmentShaderSource;
+	// Update the editable shader source in CodeMirror
+	if (editor) {
+		editor.setValue(fragmentShaderSource);
+	}
 }
 
 async function init() {
@@ -149,11 +152,19 @@ async function init() {
 		await loadShaderProgram(currentShaderIndex);
 	});
 
-	// Wire up live-editing from the shader editor with a debounced update.
-	document.getElementById('shaderEditor').addEventListener('input', () => {
-		clearTimeout(editorTimeout);
-		editorTimeout = setTimeout(updateShaderFromEditor, 1000); // 1000ms inactivity delay
-	});
+	// Initialize CodeMirror on the shader editor textarea (only once)
+	if (!editor) {
+		editor = CodeMirror.fromTextArea(document.getElementById('shaderEditor'), {
+			lineNumbers: true,
+			mode: "x-shader/x-fragment",  // use the C-like mode for GLSL; adjust as needed
+			theme: "default"              // or choose a CodeMirror theme you prefer
+		});
+		editor.setSize("90%", "30em");
+		editor.on("change", function() {
+			clearTimeout(editorTimeout);
+			editorTimeout = setTimeout(updateShaderFromEditor, 1000);
+		});
+	}
 
 	function render(time) {
 		gl.viewport(0, 0, canvas.width, canvas.height);
@@ -168,7 +179,7 @@ async function init() {
 }
 
 async function updateShaderFromEditor() {
-  const newFragmentShaderSource = document.getElementById('shaderEditor').value;
+  const newFragmentShaderSource = editor.getValue();
   
   // Use cached vertex shader source (or fetch if missing)
   let vertexSource = cachedVertexShaderSource;

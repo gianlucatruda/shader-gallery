@@ -5,6 +5,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>WebGL Playground</title>
+	<!-- CodeMirror CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.css">
+	<!-- CodeMirror JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.js"></script>
+	<!-- CodeMirror mode for C-like languages (GLSL is similar) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/clike/clike.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai-sublime.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 	<!-- Add the GLSL language module -->
@@ -37,7 +43,7 @@
 	</div>
 	<canvas id="myCanvas"></canvas>
 	<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff;"></div>
-	<textarea id="shaderEditor" style="width: 90%; max-height: 40vh; overflow: auto; background: #1e1e1e; color: #dcdcdc; padding: 10px; font-size: 14px; border: 1px solid #333; margin-top: 10px;" spellcheck="false"></textarea>
+	<textarea id="shaderEditor" spellcheck="false"></textarea>
 	<script src="main.js" type="module"></script>
 	<script>hljs.highlightAll();</script>
 
