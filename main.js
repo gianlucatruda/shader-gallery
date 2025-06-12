@@ -29,10 +29,14 @@ let startTime = 0;
 let editor = null;
 
 function updateURL() {
-	// Remove the .glsl extension from the shader filename.
-	const shaderName = shaders[currentShaderIndex].replace(/\.glsl$/i, "");
-	// Use history API to update the URL without reloading the page.
-	window.history.replaceState(null, "", "/" + shaderName);
+	try {
+		// Remove the .glsl extension from the shader filename.
+		const shaderName = shaders[currentShaderIndex].replace(/\.glsl$/i, "");
+		// Use the History API to update the URL without reloading the page.
+		window.history.replaceState(null, "", "/" + shaderName);
+	} catch (error) {
+		console.warn("History update failed: ", error);
+	}
 }
 
 function createShader(gl, type, source) {
