@@ -32,10 +32,10 @@ function updateURL() {
 	try {
 		// Remove the .glsl extension from the shader filename.
 		const shaderName = shaders[currentShaderIndex].replace(/\.glsl$/i, "");
-		// Use the History API to update the URL without reloading the page.
-		window.history.replaceState(null, "", "/" + shaderName);
+		// Use hash-based routing instead of pushState
+		window.location.hash = shaderName;
 	} catch (error) {
-		console.warn("History update failed: ", error);
+		console.warn("URL update failed: ", error);
 	}
 }
 
@@ -152,10 +152,10 @@ async function init() {
 		return;
 	}
 
-	// Check the URL for an override shader name.
-	const path = window.location.pathname;
-	if (path && path !== "/") {
-		const shaderNameFromURL = path.slice(1).toLowerCase(); // remove leading slash
+	// Check the hash for an override shader name.
+	const hash = window.location.hash;
+	if (hash && hash !== "#") {
+		const shaderNameFromURL = hash.slice(1).toLowerCase(); // remove leading #
 		const matchingIndex = shaders.findIndex(shaderFilename => {
 			// Remove the '.glsl' extension for comparison.
 			const name = shaderFilename.replace(/\.glsl$/i, "");
@@ -225,6 +225,9 @@ async function init() {
 	}
 
 	requestAnimationFrame(render);
+	
+	// Initialize highlight.js (moved from inline script)
+	hljs.highlightAll();
 }
 
 async function updateShaderFromEditor() {
