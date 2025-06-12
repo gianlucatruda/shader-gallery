@@ -157,12 +157,21 @@ async function init() {
 		editor = CodeMirror.fromTextArea(document.getElementById('shaderEditor'), {
 			lineNumbers: true,
 			mode: "x-shader/x-fragment",  // use the C-like mode for GLSL; adjust as needed
-			theme: "default"              // or choose a CodeMirror theme you prefer
+			theme: "material-darker",
+			keyMap: "default"  // start with default keybindings
 		});
 		editor.setSize("90%", "30em");
 		editor.on("change", function() {
 			clearTimeout(editorTimeout);
 			editorTimeout = setTimeout(updateShaderFromEditor, 1000);
+		});
+		// Add a listener for the Vim toggle checkbox
+		document.getElementById("vimToggle").addEventListener("change", (e) => {
+		   if (e.target.checked) {
+		      editor.setOption("keyMap", "vim");
+		   } else {
+		      editor.setOption("keyMap", "default");
+		   }
 		});
 	}
 
@@ -194,7 +203,7 @@ async function updateShaderFromEditor() {
   
   if (!vertexShader || !fragmentShader) {
     // Indicate an error with the shader code (red border)
-    document.getElementById('shaderEditor').style.border = '2px solid red';
+    editor.getWrapperElement().style.border = '2px solid red';
     return;
   }
   
@@ -207,13 +216,13 @@ async function updateShaderFromEditor() {
   // Handle linking errors
   if (!gl.getProgramParameter(newProgram, gl.LINK_STATUS)) {
     console.error(`Error linking shader program: ${gl.getProgramInfoLog(newProgram)}`);
-    document.getElementById('shaderEditor').style.border = '2px solid red';
+    editor.getWrapperElement().style.border = '2px solid red';
     gl.deleteProgram(newProgram);
     return;
   }
   
   // Success: clear error indicator and update the program
-  document.getElementById('shaderEditor').style.border = '1px solid #333';
+  editor.getWrapperElement().style.border = '1px solid #333';
   gl.useProgram(newProgram);
   
   // Rebind attributes and update uniform locations (same as in loadShaderProgram)
