@@ -162,7 +162,7 @@ async function init() {
 			theme: "material-darker",
 			keyMap: "default"  // start with default keybindings
 		});
-		editor.setSize("90%", "30em");
+		editor.setSize("100%", "30em");
 		editor.on("change", function() {
 			clearTimeout(editorTimeout);
 			editorTimeout = setTimeout(updateShaderFromEditor, 1000);
