@@ -10,6 +10,18 @@ let currentShaderIndex = 0;
 let gl, canvas, vertexBuffer, program;
 let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
 
+function createShader(gl, type, source) {
+	const shader = gl.createShader(type);
+	gl.shaderSource(shader, source);
+	gl.compileShader(shader);
+	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		console.error(`An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`);
+		gl.deleteShader(shader);
+		return null;
+	}
+	return shader;
+}
+
 window.addEventListener('resize', () => {
 	init(); // You may want to turn some functionalities in init into a separate resize function
 });
@@ -78,18 +90,6 @@ async function init() {
 	// Scale the canvas by the device pixel ratio, maintaining the aspect ratio.
 	canvas.setAttribute('width', style_width * dpi);
 	canvas.setAttribute('height', style_height * dpi);
-
-	function createShader(gl, type, source) {
-		const shader = gl.createShader(type);
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-			console.error(`An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`);
-			gl.deleteShader(shader);
-			return null;
-		}
-		return shader;
-	}
 
 	vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
