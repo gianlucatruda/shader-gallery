@@ -1,5 +1,15 @@
 console.log("Main.js");
 
+const shaders = [
+	'frag/shader1.glsl',
+	'frag/shader2.glsl',
+	// Add additional shader paths as needed
+];
+
+let currentShaderIndex = 0;
+let gl, canvas, vertexBuffer, program;
+let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
+
 window.addEventListener('resize', () => {
 	init(); // You may want to turn some functionalities in init into a separate resize function
 });
@@ -11,9 +21,51 @@ async function fetchShader(url) {
 	return await res.text();
 }
 
+async function loadShaderProgram(index) {
+	// Fetch the fragment shader from the current index.
+	const fragmentShaderSource = await fetchShader(shaders[index]);
+	// Assume vertexShaderSource is either already fetched globally or fetched here.
+	const vertexShaderSource = await fetchShader('vertexShader.glsl');
+
+	// Compile shaders using the existing helper.
+	const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+	const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+	if (!vertexShader || !fragmentShader) return;
+
+	// Create, attach, and link the new program.
+	const newProgram = gl.createProgram();
+	gl.attachShader(newProgram, vertexShader);
+	gl.attachShader(newProgram, fragmentShader);
+	gl.linkProgram(newProgram);
+	if (!gl.getProgramParameter(newProgram, gl.LINK_STATUS)) {
+		console.error(`Unable to initialize the shader program: ${gl.getProgramInfoLog(newProgram)}`);
+		gl.deleteProgram(newProgram);
+		return;
+	}
+	gl.useProgram(newProgram);
+
+	// Rebind attributes and update uniform locations.
+	const positionAttributeLocation = gl.getAttribLocation(newProgram, 'a_position');
+	gl.enableVertexAttribArray(positionAttributeLocation);
+	// Assuming vertexBuffer is globally declared (or in a common scope):
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+	gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+	// Update uniform location variables.
+	resolutionUniformLocation = gl.getUniformLocation(newProgram, 'iResolution');
+	timeUniformLocation = gl.getUniformLocation(newProgram, 'iTime');
+	mouseUniformLocation = gl.getUniformLocation(newProgram, 'iMouse');
+	
+	// Apply initial uniform values.
+	gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+
+	// Set the global program reference to the new program.
+	program = newProgram;
+}
+
 async function init() {
-	const canvas = document.getElementById('myCanvas');
-	const gl = canvas.getContext('webgl');
+	canvas = document.getElementById('myCanvas');
+	gl = canvas.getContext('webgl');
 	if (!gl) {
 		alert('WebGL not supported by this browser.');
 		return;
@@ -26,8 +78,6 @@ async function init() {
 	// Scale the canvas by the device pixel ratio, maintaining the aspect ratio.
 	canvas.setAttribute('width', style_width * dpi);
 	canvas.setAttribute('height', style_height * dpi);
-	const vertexShaderSource = await fetchShader('vertexShader.glsl');
-	const fragmentShaderSource = await fetchShader('fragmentShader.glsl');
 
 	function createShader(gl, type, source) {
 		const shader = gl.createShader(type);
@@ -41,21 +91,7 @@ async function init() {
 		return shader;
 	}
 
-	const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-	const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-
-	const program = gl.createProgram();
-	gl.attachShader(program, vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
-	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-		console.error(`Unable to initialize the shader program: ${gl.getProgramInfoLog(program)}`);
-		gl.deleteProgram(program);
-		return;
-	}
-	gl.useProgram(program);
-
-	const vertexBuffer = gl.createBuffer();
+	vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 	const vertices = new Float32Array([
 		-1.0, -1.0,
@@ -65,15 +101,18 @@ async function init() {
 	]);
 	gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-	const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-	gl.enableVertexAttribArray(positionAttributeLocation);
-	gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+	await loadShaderProgram(currentShaderIndex);
 
-	// Shadertoy variable names
-	const resolutionUniformLocation = gl.getUniformLocation(program, 'iResolution');
-	gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-	const timeUniformLocation = gl.getUniformLocation(program, 'iTime');
-	const mouseUniformLocation = gl.getUniformLocation(program, 'iMouse');
+	// Wire up navigation buttons
+	document.getElementById('prev').addEventListener('click', async () => {
+		currentShaderIndex = (currentShaderIndex - 1 + shaders.length) % shaders.length;
+		await loadShaderProgram(currentShaderIndex);
+	});
+
+	document.getElementById('next').addEventListener('click', async () => {
+		currentShaderIndex = (currentShaderIndex + 1) % shaders.length;
+		await loadShaderProgram(currentShaderIndex);
+	});
 
 	function render(time) {
 		gl.viewport(0, 0, canvas.width, canvas.height);
