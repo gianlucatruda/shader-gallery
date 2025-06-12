@@ -9,6 +9,7 @@ const shaders = [
 let currentShaderIndex = 0;
 let gl, canvas, vertexBuffer, program;
 let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
+let startTime = 0;
 
 function createShader(gl, type, source) {
 	const shader = gl.createShader(type);
@@ -67,6 +68,9 @@ async function loadShaderProgram(index) {
 	resolutionUniformLocation = gl.getUniformLocation(newProgram, 'iResolution');
 	timeUniformLocation = gl.getUniformLocation(newProgram, 'iTime');
 	mouseUniformLocation = gl.getUniformLocation(newProgram, 'iMouse');
+
+	// Reset time for the new shader.
+	startTime = performance.now();
 	
 	// Apply initial uniform values.
 	gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
@@ -116,7 +120,7 @@ async function init() {
 
 	function render(time) {
 		gl.viewport(0, 0, canvas.width, canvas.height);
-		gl.uniform1f(timeUniformLocation, time * 0.001);  // time in seconds
+		gl.uniform1f(timeUniformLocation, (time - startTime) * 0.001);  // time offset in seconds
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
