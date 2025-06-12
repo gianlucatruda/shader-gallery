@@ -176,7 +176,7 @@ async function init() {
 			theme: "material-darker",
 			keyMap: "default"  // start with default keybindings
 		});
-		editor.setSize("100%", "30em");
+		editor.setSize("100%", "100%");
 		// Allow CodeMirror to shrink within its container:
 		editor.getWrapperElement().style.minWidth = "0";
 		editor.getWrapperElement().style.minHeight = "0";
@@ -297,7 +297,7 @@ window.addEventListener('resize', () => {
 	// Update CodeMirror editor dimensions, if applicable.
 	if (editor) {
 		// You may compute a new height or simply refresh.
-		editor.setSize("100%", "30em");
+		editor.setSize("100%", "100%");
 	}
 });
 
