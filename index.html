@@ -8,22 +8,24 @@
 	<!-- CodeMirror CSS -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.css">
 	<!-- CodeMirror Dark Mode Theme CSS -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/theme/material-darker.min.css">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/theme/material-darker.min.css">
 	<!-- CodeMirror JS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.js"></script>
 	<!-- CodeMirror mode for C-like languages (GLSL is similar) -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/clike/clike.min.js"></script>
 	<!-- CodeMirror Vim keymap (for enabling Vim keybindings) -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/keymap/vim.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai-sublime.min.css">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai-sublime.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 	<!-- Add the GLSL language module -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/glsl.min.js"></script>
 	<style>
 		body {
-			background-color: #121212;
+			background-color: rgb(29, 30, 32);
 			color: #ffffff;
-			font-family: Helvetica, sans-serif;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 			margin: 0;
 			display: flex;
 			flex-direction: column;
@@ -41,6 +43,8 @@
 </head>
 
 <body>
+	<h2 style="font-size: 18px; text-align: center;"><a href='https://gianluca.ai' style="color: white;"
+			;>Gianluca</a>'s shader gallery</h2>
 	<!-- Canvas stays at the top -->
 	<canvas id="myCanvas"></canvas>
 
@@ -49,23 +53,28 @@
 
 	<!-- Navigation arrows (below the shader name) -->
 	<div id="navContainer" style="width: 90%; text-align: center; margin-top: 10px;">
-	  <button id="prev" style="margin: 10px;">←</button>
-	  <button id="next" style="margin: 10px;">→</button>
+		<button id="prev" style="margin: 10px;">←</button>
+		<button id="next" style="margin: 10px;">→</button>
 	</div>
 
 	<!-- Editor container: CodeMirror will replace the textarea.
 	     The container positions a controls overlay in the top-right. -->
 	<div id="editorContainer" style="position: relative; width: 90%; margin-top: 10px;">
-	  <textarea id="shaderEditor" spellcheck="false"></textarea>
-	  <div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
-	    <input type="checkbox" id="vimToggle" style="margin-right: 5px;">
-	    <label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Vim bindings</label>
-	    <button id="copyBtn" title="Copy raw text" style="background: transparent; border: '1px'; color: #ffffff; cursor: pointer; font-size: 14px;">Copy</button>
-	  </div>
+		<textarea id="shaderEditor" spellcheck="false"></textarea>
+		<div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
+			<input type="checkbox" id="vimToggle" style="margin-right: 5px;">
+			<label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Vim bindings</label>
+			<button id="copyBtn" title="Copy raw text"
+				style="background: transparent; border: '1px'; color: #ffffff; cursor: pointer; font-size: 14px;">Copy</button>
+		</div>
 	</div>
 
 	<script src="main.js" type="module"></script>
 
 </body>
+
+<footer>
+		<p>Copyright (c) 2025 Gianluca Truda. All Rights Reserved.</p>
+</footer>
 
 </html>

@@ -1,20 +1,15 @@
 # WebGL-shader-art
 
-I wanted to be able to make WebGL/GLSL shader art projects in a quick and modular way like [shadertoy.com](https://www.shadertoy.com/), but be able to run locally and deploy how I choose. This **dev** branch features multiple shader examples loaded from the `frag/` directory, hash-based URL routing to indicate the current shader, live reloading, and a robust code editor (based on CodeMirror) with built-in error validation and an optional Vim keybindings mode.
+I wanted to be able to make, tweak, and share WebGL/GLSL shader art projects in a quick and modular way like [shadertoy.com](https://www.shadertoy.com/), but be able to run locally and deploy how I choose. 
 
-With some ChatGPT help, I made this vanilla web app. The project uses multiple shader examples stored in the `frag/` directory (along with `vertexShader.glsl`). Navigate between them with the on-screen arrows or via URL hashes. Shader editing is live—changes in the integrated CodeMirror editor will update the shader immediately (after validation) on a high-DPI, responsive canvas.
+This setup allows multiple shader examples loaded from the `frag/` directory, hash-based URL routing to indicate the current shader, live reloading, and a robust code editor (based on CodeMirror) with built-in error validation and an optional Vim keybindings mode.
+
+This project is a simple, extensiple "vanilla" static site. The project uses multiple shader examples stored in the `frag/` directory (along with a fixed `vertexShader.glsl`). Shader editing is live—changes in the integrated CodeMirror editor will update the shader immediately (after validation) on a high-DPI, responsive canvas.
 
 <img width="1000" alt="examples" src="https://github.com/user-attachments/assets/692203de-0140-4b0e-9413-5ac42a9a6dec">
 
-## Features
 
-- **Multiple Examples:** Easily switch between shader examples from the `frag/` directory.
-- **Hash-Based URL Routing:** The URL updates with the current shader name, allowing direct linking and easy navigation.
-- **Live Reloading:** Shader changes are applied live with a brief delay, ensuring a smooth editing experience.
-- **Enhanced Code Editor:** Integrated CodeMirror with syntax highlighting, dark theme, error validation, and an optional Vim mode.
-- **Responsive Canvas:** The application automatically adjusts to the browser window and supports high-DPI devices.
-
-I mimicked the Shadertoy API, so any straightforward shaders (with no assets) from there can be copy-pasted to and from this project in the `fragmentShader.glsl` file:
+I mimicked the Shadertoy API, so any straightforward shaders (with no assets) from there can be copy-pasted to and from this project in a `/frag/<shadername>.glsl` file:
 
 ```glsl
 

@@ -26,14 +26,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 finalColor = vec3(0.0);
 
     // For loops that use fract(uv) give a fractal effect
-    for (float i = 0.0; i < 10.0; i++) {
-        uv = fract(uv * 1.619) - 0.5;
+    for (float i = 0.0; i < 2.7; i++) {
+        uv = fract(uv * 3.142) - 0.5;
 
         float d = length(uv) * exp(length(uv0));
         vec3 col = palette(length(uv0) - i * 0.1 - iTime * 0.9);
-        d = sin(d * 5.0 + iTime) / 5.0;
+        d = sin(d * 1.5 + iTime) / 2.1;
         d = abs(d);
-        d = pow(0.01 / d, 1.9);
+        d = pow(0.02 / d, 1.9);
 
         finalColor += col * d;
     }
