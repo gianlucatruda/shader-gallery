@@ -28,6 +28,13 @@ let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
 let startTime = 0;
 let editor = null;
 
+function updateURL() {
+	// Remove the .glsl extension from the shader filename.
+	const shaderName = shaders[currentShaderIndex].replace(/\.glsl$/i, "");
+	// Use history API to update the URL without reloading the page.
+	window.history.replaceState(null, "", "/" + shaderName);
+}
+
 function createShader(gl, type, source) {
 	const shader = gl.createShader(type);
 	gl.shaderSource(shader, source);
@@ -141,17 +148,34 @@ async function init() {
 		return;
 	}
 
+	// Check the URL for an override shader name.
+	const path = window.location.pathname;
+	if (path && path !== "/") {
+		const shaderNameFromURL = path.slice(1).toLowerCase(); // remove leading slash
+		const matchingIndex = shaders.findIndex(shaderFilename => {
+			// Remove the '.glsl' extension for comparison.
+			const name = shaderFilename.replace(/\.glsl$/i, "");
+			return name.toLowerCase() === shaderNameFromURL;
+		});
+		if (matchingIndex !== -1) {
+			currentShaderIndex = matchingIndex;
+		}
+	}
 	await loadShaderProgram(currentShaderIndex);
+	// Update the URL to reflect the loaded shader (in case of a fallback).
+	updateURL();
 
 	// Wire up navigation buttons
 	document.getElementById('prev').addEventListener('click', async () => {
 		currentShaderIndex = (currentShaderIndex - 1 + shaders.length) % shaders.length;
 		await loadShaderProgram(currentShaderIndex);
+		updateURL();
 	});
 
 	document.getElementById('next').addEventListener('click', async () => {
 		currentShaderIndex = (currentShaderIndex + 1) % shaders.length;
 		await loadShaderProgram(currentShaderIndex);
+		updateURL();
 	});
 
 	// Initialize CodeMirror on the shader editor textarea (only once)
