@@ -42,27 +42,22 @@
 
 		/* New container styles */
 		#mainContainer {
-			display: flex;
-			flex-wrap: wrap;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
 			gap: 1em;
-			justify-content: center;
 			width: 100%;
-			align-self: stretch;
 		}
 
-		/* Two equal columns on larger screens */
+		/* For larger screens: two columns with equal height */
 		#previewContainer,
 		#editorWrapper {
-			flex: 1 1 45%;  /* approximately equal width, with some gap */
-			box-sizing: border-box;
-			/* Ensure the height is equal: set a fixed height (e.g., 60vh) or adjust as needed */
 			height: 60vh;
 		}
 
 		/* Make the canvas fill the preview container */
 		#previewContainer #myCanvas {
 			width: 100%;
-			height: calc(100% - 60px); /* subtract space used by shaderName and navContainer if needed */
+			height: calc(100% - 80px); /* Adjust the 80px based on the actual vertical space taken by UI elements above/below the canvas */
 			display: block;
 			border: 1px solid gray;
 		}
@@ -75,12 +70,10 @@
 		/* Responsive fallback: stack columns if window width is narrow */
 		@media (max-width: 800px) {
 			#mainContainer {
-				flex-direction: column;
+				grid-template-columns: 1fr;
 			}
 			#previewContainer,
 			#editorWrapper {
-				flex: none;
-				width: 100%;
 				height: auto;
 			}
 			/* Optionally, adjust canvas height for mobile */
