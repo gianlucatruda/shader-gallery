@@ -11,7 +11,7 @@ vec3 palette(float t) {
     vec3 c = vec3(1.0, 1.0, 1.0);
     vec3 d = vec3(0.0, 0.33, 0.67);
 
-    return a + b * cos(6.28318 * (c * t + d));
+    return a + b * cos(1.28318 * (c * t + d));
 }
 
 // Tutorial: https://youtu.be/f4s1h2YETNY
@@ -26,7 +26,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 finalColor = vec3(0.0);
 
     // For loops that use fract(uv) give a fractal effect
-    for (float i = 0.0; i < 4.0; i++) {
+    for (float i = 0.0; i < 10.0; i++) {
         uv = fract(uv * 1.619) - 0.5;
 
         float d = length(uv) * exp(length(uv0));
