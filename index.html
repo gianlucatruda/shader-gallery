@@ -41,17 +41,29 @@
 </head>
 
 <body>
-	<div style="width: 100%; text-align: center;">
-		<button id="prev" style="margin: 10px;">←</button>
-		<button id="next" style="margin: 10px;">→</button>
-	</div>
+	<!-- Canvas stays at the top -->
 	<canvas id="myCanvas"></canvas>
-	<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff;"></div>
-	<textarea id="shaderEditor" spellcheck="false"></textarea>
-	<div style="width: 90%; margin-top: 5px; text-align: left;">
-	  <input type="checkbox" id="vimToggle">
-	  <label for="vimToggle" style="font-size: 14px; color: #ffffff;">Enable Vim Keybindings</label>
+
+	<!-- Shader name (displayed below the canvas) -->
+	<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center;"></div>
+
+	<!-- Navigation arrows (below the shader name) -->
+	<div id="navContainer" style="width: 90%; text-align: center; margin-top: 10px;">
+	  <button id="prev" style="margin: 10px;">←</button>
+	  <button id="next" style="margin: 10px;">→</button>
 	</div>
+
+	<!-- Editor container: CodeMirror will replace the textarea.
+	     The container positions a controls overlay in the top-right. -->
+	<div id="editorContainer" style="position: relative; width: 90%; margin-top: 10px;">
+	  <textarea id="shaderEditor" spellcheck="false"></textarea>
+	  <div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
+	    <input type="checkbox" id="vimToggle" style="margin-right: 5px;">
+	    <label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Enable Vim</label>
+	    <button id="copyBtn" title="Copy raw text" style="background: transparent; border: none; color: #ffffff; cursor: pointer; font-size: 18px;">📋</button>
+	  </div>
+	</div>
+
 	<script src="main.js" type="module"></script>
 	<script>hljs.highlightAll();</script>
 

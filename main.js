@@ -175,6 +175,16 @@ async function init() {
 		      editor.setOption("keyMap", "default");
 		   }
 		});
+
+		// Add a listener for the copy button
+		document.getElementById("copyBtn").addEventListener("click", () => {
+		   const shaderText = editor.getValue();
+		   navigator.clipboard.writeText(shaderText).then(() => {
+		      console.log("Shader code copied to clipboard");
+		   }).catch(err => {
+		      console.error("Failed to copy shader code: ", err);
+		   });
+		});
 	}
 
 	function render(time) {
