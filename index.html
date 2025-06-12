@@ -27,10 +27,11 @@
 			color: #ffffff;
 			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 			margin: 0;
+			padding: 20px;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			padding: 20px;
+			min-height: 100vh;
 		}
 
 		canvas {
@@ -39,42 +40,106 @@
 			width: 90%;
 			height: 60vh;
 		}
+
+		/* New container styles */
+		#mainContainer {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1em;
+			width: 100%;
+		}
+
+		/* For larger screens: two columns with equal height */
+		#previewContainer,
+		#editorWrapper {
+			height: 60vh;
+			min-width: 0;
+			min-height: 0;
+		}
+
+		/* Make the canvas fill the preview container */
+		#previewContainer #myCanvas {
+			width: 100%;
+			height: 100%;
+			max-height: 60vh; /* maximum canvas height on large screens */
+			object-fit: contain; /* helps maintain aspect ratio */
+			display: block;
+			border: 1px solid gray;
+		}
+
+		/* Ensure the CodeMirror editor (inside #editorContainer) fills its parent */
+		#editorContainer {
+			height: 100%;
+		}
+
+		#navContainer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 10px;
+			margin-top: 10px;
+		}
+
+		footer {
+			align-self: stretch;
+			text-align: center;
+			margin-top: auto;
+			width: 100%;
+			padding: 10px 0;
+		}
+
+		/* Responsive fallback: stack columns if window width is narrow */
+		@media (max-width: 1000px) {
+			#mainContainer {
+				grid-template-columns: 1fr;
+			}
+			#previewContainer,
+			#editorWrapper {
+				height: auto;
+				min-height: 0;
+			}
+			#previewContainer #myCanvas {
+				height: auto;
+				max-width: 100%;
+			}
+		}
 	</style>
 </head>
 
 <body>
 	<h2 style="font-size: 18px; text-align: center;"><a href='https://gianluca.ai' style="color: white;"
 			;>Gianluca</a>'s shader gallery</h2>
-	<!-- Canvas stays at the top -->
-	<canvas id="myCanvas"></canvas>
+	<!-- Main two-column container -->
+	<div id="mainContainer">
+		<!-- Left column: Shader preview + UI -->
+		<div id="previewContainer">
+			<canvas id="myCanvas"></canvas>
+			<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center;"></div>
+			<div id="navContainer">
+				<button id="prev" style="margin: 10px;">←</button>
+				<button id="next" style="margin: 10px;">→</button>
+			</div>
+		</div>
 
-	<!-- Shader name (displayed below the canvas) -->
-	<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center;"></div>
-
-	<!-- Navigation arrows (below the shader name) -->
-	<div id="navContainer" style="width: 90%; text-align: center; margin-top: 10px;">
-		<button id="prev" style="margin: 10px;">←</button>
-		<button id="next" style="margin: 10px;">→</button>
-	</div>
-
-	<!-- Editor container: CodeMirror will replace the textarea.
-	     The container positions a controls overlay in the top-right. -->
-	<div id="editorContainer" style="position: relative; width: 90%; margin-top: 10px;">
-		<textarea id="shaderEditor" spellcheck="false"></textarea>
-		<div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
-			<input type="checkbox" id="vimToggle" style="margin-right: 5px;">
-			<label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Vim bindings</label>
-			<button id="copyBtn" title="Copy raw text"
-				style="background: transparent; border: '1px'; color: #ffffff; cursor: pointer; font-size: 14px;">Copy</button>
+		<!-- Right column: Code editor -->
+		<div id="editorWrapper">
+			<div id="editorContainer" style="position: relative; width: 100%; margin-top: 0;">
+				<textarea id="shaderEditor" spellcheck="false"></textarea>
+				<div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
+					<input type="checkbox" id="vimToggle" style="margin-right: 5px;">
+					<label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Vim bindings</label>
+					<button id="copyBtn" title="Copy raw text" style="background: transparent; border: '1px'; color: #ffffff; cursor: pointer; font-size: 14px;">Copy</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
 	<script src="main.js" type="module"></script>
 
-</body>
-
-<footer>
+	<footer>
 		<p>Copyright (c) 2025 Gianluca Truda. All Rights Reserved.</p>
-</footer>
+	</footer>
+
+</body>
 
 </html>

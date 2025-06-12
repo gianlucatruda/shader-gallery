@@ -40,9 +40,6 @@ function createShader(gl, type, source) {
 	return shader;
 }
 
-window.addEventListener('resize', () => {
-	init(); // You may want to turn some functionalities in init into a separate resize function
-});
 async function fetchShader(url) {
 	const res = await fetch(url + '?cache=' + Date.now());
 	if (!res.ok) {
@@ -180,6 +177,9 @@ async function init() {
 			keyMap: "default"  // start with default keybindings
 		});
 		editor.setSize("100%", "30em");
+		// Allow CodeMirror to shrink within its container:
+		editor.getWrapperElement().style.minWidth = "0";
+		editor.getWrapperElement().style.minHeight = "0";
 		editor.on("change", function() {
 			clearTimeout(editorTimeout);
 			editorTimeout = setTimeout(updateShaderFromEditor, 1000);
@@ -274,5 +274,31 @@ async function updateShaderFromEditor() {
   // Switch to the new program
   program = newProgram;
 }
+
+window.addEventListener('resize', () => {
+	// Get the canvas element.
+	const canvas = document.getElementById('myCanvas');
+	let dpi = window.devicePixelRatio || 1;
+	// Get the computed style dimensions (assumes CSS controls width/height).
+	let styleWidth = parseFloat(getComputedStyle(canvas).getPropertyValue("width"));
+	let styleHeight = parseFloat(getComputedStyle(canvas).getPropertyValue("height"));
+	// Set the actual canvas dimensions.
+	canvas.width = styleWidth * dpi;
+	canvas.height = styleHeight * dpi;
+	
+	// Update the WebGL viewport.
+	if (gl) {
+		gl.viewport(0, 0, canvas.width, canvas.height);
+		if (resolutionUniformLocation) {
+			gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+		}
+	}
+	
+	// Update CodeMirror editor dimensions, if applicable.
+	if (editor) {
+		// You may compute a new height or simply refresh.
+		editor.setSize("100%", "30em");
+	}
+});
 
 window.onload = init;
