@@ -39,33 +39,81 @@
 			width: 90%;
 			height: 60vh;
 		}
+
+		/* New container styles */
+		#mainContainer {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1em;
+			justify-content: center;
+		}
+
+		/* Two equal columns on larger screens */
+		#previewContainer,
+		#editorWrapper {
+			flex: 1 1 45%;  /* approximately equal width, with some gap */
+			box-sizing: border-box;
+			/* Ensure the height is equal: set a fixed height (e.g., 60vh) or adjust as needed */
+			height: 60vh;
+		}
+
+		/* Make the canvas fill the preview container */
+		#previewContainer #myCanvas {
+			width: 100%;
+			height: calc(100% - 60px); /* subtract space used by shaderName and navContainer if needed */
+			display: block;
+			border: 1px solid gray;
+		}
+
+		/* Ensure the CodeMirror editor (inside #editorContainer) fills its parent */
+		#editorContainer {
+			height: 100%;
+		}
+
+		/* Responsive fallback: stack columns if window width is narrow */
+		@media (max-width: 800px) {
+			#mainContainer {
+				flex-direction: column;
+			}
+			#previewContainer,
+			#editorWrapper {
+				flex: none;
+				width: 100%;
+				height: auto;
+			}
+			/* Optionally, adjust canvas height for mobile */
+			#previewContainer #myCanvas {
+				height: 60vh;
+			}
+		}
 	</style>
 </head>
 
 <body>
 	<h2 style="font-size: 18px; text-align: center;"><a href='https://gianluca.ai' style="color: white;"
 			;>Gianluca</a>'s shader gallery</h2>
-	<!-- Canvas stays at the top -->
-	<canvas id="myCanvas"></canvas>
+	<!-- Main two-column container -->
+	<div id="mainContainer">
+		<!-- Left column: Shader preview + UI -->
+		<div id="previewContainer">
+			<canvas id="myCanvas"></canvas>
+			<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center;"></div>
+			<div id="navContainer" style="width: 90%; text-align: center; margin-top: 10px;">
+				<button id="prev" style="margin: 10px;">←</button>
+				<button id="next" style="margin: 10px;">→</button>
+			</div>
+		</div>
 
-	<!-- Shader name (displayed below the canvas) -->
-	<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center;"></div>
-
-	<!-- Navigation arrows (below the shader name) -->
-	<div id="navContainer" style="width: 90%; text-align: center; margin-top: 10px;">
-		<button id="prev" style="margin: 10px;">←</button>
-		<button id="next" style="margin: 10px;">→</button>
-	</div>
-
-	<!-- Editor container: CodeMirror will replace the textarea.
-	     The container positions a controls overlay in the top-right. -->
-	<div id="editorContainer" style="position: relative; width: 90%; margin-top: 10px;">
-		<textarea id="shaderEditor" spellcheck="false"></textarea>
-		<div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
-			<input type="checkbox" id="vimToggle" style="margin-right: 5px;">
-			<label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Vim bindings</label>
-			<button id="copyBtn" title="Copy raw text"
-				style="background: transparent; border: '1px'; color: #ffffff; cursor: pointer; font-size: 14px;">Copy</button>
+		<!-- Right column: Code editor -->
+		<div id="editorWrapper">
+			<div id="editorContainer" style="position: relative; width: 100%; margin-top: 0;">
+				<textarea id="shaderEditor" spellcheck="false"></textarea>
+				<div id="editorControls" style="position: absolute; top: 5px; right: 5px; display: flex; align-items: center;">
+					<input type="checkbox" id="vimToggle" style="margin-right: 5px;">
+					<label for="vimToggle" style="font-size: 14px; color: #ffffff; margin-right: 10px;">Vim bindings</label>
+					<button id="copyBtn" title="Copy raw text" style="background: transparent; border: '1px'; color: #ffffff; cursor: pointer; font-size: 14px;">Copy</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
