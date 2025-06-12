@@ -21,6 +21,8 @@ async function fetchShaderList() {
 }
 
 let currentShaderIndex = 0;
+let cachedVertexShaderSource = null;
+let editorTimeout = null;
 let gl, canvas, vertexBuffer, program;
 let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
 let startTime = 0;
@@ -52,6 +54,7 @@ async function loadShaderProgram(index) {
 	// Fetch the fragment shader.
 	const fragmentShaderSource = await fetchShader(shaders[index]);
 	const vertexShaderSource = await fetchShader('vertexShader.glsl');
+	cachedVertexShaderSource = vertexShaderSource;
 
 	// Compile shaders using the existing helper.
 	const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -92,10 +95,8 @@ async function loadShaderProgram(index) {
 	program = newProgram;
 	// Update the displayed fragment shader filename.
 	document.getElementById('shaderName').textContent = shaders[currentShaderIndex];
-	// Update the displayed shader code (inside the <code> element)
-	const codeBlock = document.querySelector('#shaderCode code');
-	codeBlock.textContent = fragmentShaderSource;
-	hljs.highlightElement(codeBlock);
+	// Update the editable shader source
+	document.getElementById('shaderEditor').value = fragmentShaderSource;
 }
 
 async function init() {
@@ -148,6 +149,12 @@ async function init() {
 		await loadShaderProgram(currentShaderIndex);
 	});
 
+	// Wire up live-editing from the shader editor with a debounced update.
+	document.getElementById('shaderEditor').addEventListener('input', () => {
+		clearTimeout(editorTimeout);
+		editorTimeout = setTimeout(updateShaderFromEditor, 1000); // 1000ms inactivity delay
+	});
+
 	function render(time) {
 		gl.viewport(0, 0, canvas.width, canvas.height);
 		gl.uniform1f(timeUniformLocation, (time - startTime) * 0.001);  // time offset in seconds
@@ -158,6 +165,62 @@ async function init() {
 	}
 
 	requestAnimationFrame(render);
+}
+
+async function updateShaderFromEditor() {
+  const newFragmentShaderSource = document.getElementById('shaderEditor').value;
+  
+  // Use cached vertex shader source (or fetch if missing)
+  let vertexSource = cachedVertexShaderSource;
+  if (!vertexSource) {
+    vertexSource = await fetchShader('vertexShader.glsl');
+    cachedVertexShaderSource = vertexSource;
+  }
+  
+  // Attempt to compile the shaders
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, newFragmentShaderSource);
+  
+  if (!vertexShader || !fragmentShader) {
+    // Indicate an error with the shader code (red border)
+    document.getElementById('shaderEditor').style.border = '2px solid red';
+    return;
+  }
+  
+  // Create new program and link
+  const newProgram = gl.createProgram();
+  gl.attachShader(newProgram, vertexShader);
+  gl.attachShader(newProgram, fragmentShader);
+  gl.linkProgram(newProgram);
+  
+  // Handle linking errors
+  if (!gl.getProgramParameter(newProgram, gl.LINK_STATUS)) {
+    console.error(`Error linking shader program: ${gl.getProgramInfoLog(newProgram)}`);
+    document.getElementById('shaderEditor').style.border = '2px solid red';
+    gl.deleteProgram(newProgram);
+    return;
+  }
+  
+  // Success: clear error indicator and update the program
+  document.getElementById('shaderEditor').style.border = '1px solid #333';
+  gl.useProgram(newProgram);
+  
+  // Rebind attributes and update uniform locations (same as in loadShaderProgram)
+  const positionAttributeLocation = gl.getAttribLocation(newProgram, 'a_position');
+  gl.enableVertexAttribArray(positionAttributeLocation);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+  
+  resolutionUniformLocation = gl.getUniformLocation(newProgram, 'iResolution');
+  timeUniformLocation = gl.getUniformLocation(newProgram, 'iTime');
+  mouseUniformLocation = gl.getUniformLocation(newProgram, 'iMouse');
+  
+  // Reset time and update resolution uniform
+  startTime = performance.now();
+  gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+  
+  // Switch to the new program
+  program = newProgram;
 }
 
 window.onload = init;
