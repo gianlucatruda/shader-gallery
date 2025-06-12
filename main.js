@@ -1,10 +1,10 @@
 console.log("Main.js");
 
-const shaders = [
-	'frag/shader1.glsl',
-	'frag/shader2.glsl',
-	// Add additional shader paths as needed
-];
+// Dynamically import all .glsl files from the frag/ folder as raw strings.
+const shaderModules = import.meta.glob('./frag/*.glsl', { as: 'raw' });
+
+// Generate a sorted array of the shader paths.
+const shaders = Object.keys(shaderModules).sort();
 
 let currentShaderIndex = 0;
 let gl, canvas, vertexBuffer, program;
@@ -36,7 +36,7 @@ async function fetchShader(url) {
 
 async function loadShaderProgram(index) {
 	// Fetch the fragment shader from the current index.
-	const fragmentShaderSource = await fetchShader(shaders[index]);
+	const fragmentShaderSource = await shaderModules[shaders[index]]();
 	// Assume vertexShaderSource is either already fetched globally or fetched here.
 	const vertexShaderSource = await fetchShader('vertexShader.glsl');
 
