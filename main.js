@@ -53,7 +53,7 @@ async function fetchShader(url) {
 
 async function loadShaderProgram(index) {
 	// Fetch the fragment shader.
-	const fragmentShaderSource = await fetchShader(shaders[index]);
+	const fragmentShaderSource = await fetchShader('frag/' + shaders[index]);
 	const vertexShaderSource = await fetchShader('vertexShader.glsl');
 	cachedVertexShaderSource = vertexShaderSource;
 
