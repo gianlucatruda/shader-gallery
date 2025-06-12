@@ -5,6 +5,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>WebGL Playground</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai-sublime.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 	<style>
 		body {
 			background-color: #121212;
@@ -12,27 +14,32 @@
 			font-family: Helvetica, sans-serif;
 			margin: 0;
 			display: flex;
-			justify-content: center;
+			flex-direction: column;
 			align-items: center;
-			height: 100vh;
+			padding: 20px;
 		}
 
 		canvas {
 			display: block;
 			border: 1px solid gray;
 			width: 90%;
-			height: 90%;
+			height: 60vh;
 		}
 	</style>
 </head>
 
 <body>
-	<button id="prev" style="position: absolute; left: 20px; top: 50%;">←</button>
+	<div style="width: 100%; text-align: center;">
+		<button id="prev" style="margin: 10px;">←</button>
+		<button id="next" style="margin: 10px;">→</button>
+	</div>
 	<canvas id="myCanvas"></canvas>
-	<div id="shaderName" style="position: absolute; bottom: 60px; width: 100%; text-align: center; font-size: 18px; color: #ffffff;"></div>
-	<pre id="shaderCode" style="position: absolute; bottom: 0; left: 5%; width: 90%; max-height: 40%; overflow: auto; background: #1e1e1e; color: #dcdcdc; padding: 10px; font-size: 14px; border: 1px solid #333;"></pre>
-	<button id="next" style="position: absolute; right: 20px; top: 50%;">→</button>
+	<div id="shaderName" style="margin-top: 20px; font-size: 18px; color: #ffffff;"></div>
+	<pre id="shaderCode" style="width: 90%; max-height: 40vh; overflow: auto; background: #1e1e1e; color: #dcdcdc; padding: 10px; font-size: 14px; border: 1px solid #333; margin-top: 10px;">
+		<code class="language-glsl"></code>
+	</pre>
 	<script src="main.js" type="module"></script>
+	<script>hljs.highlightAll();</script>
 
 </body>
 

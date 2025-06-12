@@ -79,8 +79,10 @@ async function loadShaderProgram(index) {
 	program = newProgram;
 	// Update the displayed fragment shader filename.
 	document.getElementById('shaderName').textContent = shaders[currentShaderIndex];
-	// Update the displayed shader code.
-	document.getElementById('shaderCode').textContent = fragmentShaderSource;
+	// Update the displayed shader code (inside the <code> element)
+	const codeBlock = document.querySelector('#shaderCode code');
+	codeBlock.textContent = fragmentShaderSource;
+	hljs.highlightElement(codeBlock);
 }
 
 async function init() {
