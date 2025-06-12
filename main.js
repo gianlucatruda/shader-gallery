@@ -177,6 +177,9 @@ async function init() {
 			keyMap: "default"  // start with default keybindings
 		});
 		editor.setSize("100%", "30em");
+		// Allow CodeMirror to shrink within its container:
+		editor.getWrapperElement().style.minWidth = "0";
+		editor.getWrapperElement().style.minHeight = "0";
 		editor.on("change", function() {
 			clearTimeout(editorTimeout);
 			editorTimeout = setTimeout(updateShaderFromEditor, 1000);

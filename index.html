@@ -52,12 +52,16 @@
 		#previewContainer,
 		#editorWrapper {
 			height: 60vh;
+			min-width: 0;
+			min-height: 0;
 		}
 
 		/* Make the canvas fill the preview container */
 		#previewContainer #myCanvas {
 			width: 100%;
-			height: calc(100% - 80px); /* Adjust the 80px based on the actual vertical space taken by UI elements above/below the canvas */
+			height: 100%;
+			max-height: 60vh; /* maximum canvas height on large screens */
+			object-fit: contain; /* helps maintain aspect ratio */
 			display: block;
 			border: 1px solid gray;
 		}
@@ -75,10 +79,11 @@
 			#previewContainer,
 			#editorWrapper {
 				height: auto;
+				min-height: 0;
 			}
-			/* Optionally, adjust canvas height for mobile */
 			#previewContainer #myCanvas {
-				height: 60vh;
+				height: auto;
+				max-width: 100%;
 			}
 		}
 	</style>
