@@ -96,9 +96,11 @@ async function loadShaderProgram(index) {
 	program = newProgram;
 	// Update the displayed fragment shader filename.
 	document.getElementById('shaderName').textContent = shaders[currentShaderIndex];
-	// Update the editable shader source in CodeMirror
+	// Update the editable shader source
 	if (editor) {
 		editor.setValue(fragmentShaderSource);
+	} else {
+		document.getElementById('shaderEditor').value = fragmentShaderSource;
 	}
 }
 
