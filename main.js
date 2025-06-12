@@ -14,7 +14,7 @@ async function fetchShaderList() {
     const href = anchor.getAttribute('href');
     // Exclude parent directory links and only include .glsl files.
     if (href && href !== "../" && href.endsWith('.glsl')) {
-      shaderList.push("frag/" + href);
+      shaderList.push(href);
     }
   });
   return shaderList.sort();  // sort alphabetically
