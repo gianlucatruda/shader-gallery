@@ -44,7 +44,7 @@ window.addEventListener('resize', () => {
 	init(); // You may want to turn some functionalities in init into a separate resize function
 });
 async function fetchShader(url) {
-	const res = await fetch(url);
+	const res = await fetch(url + '?cache=' + Date.now());
 	if (!res.ok) {
 		throw new Error(`Failed to fetch shader: ${res.statusText}`);
 	}
