@@ -1,6 +1,8 @@
 [
   "001GianlucaFirstShader.glsl",
   "002GianlucaExperiment.glsl",
-  "003.glsl",
-  "testShader.glsl"
+  "003PatternZoomer.glsl",
+  "004PunchDrunk.glsl",
+  "testShader.glsl",
+  "dev.glsl"
 ]
