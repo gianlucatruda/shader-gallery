@@ -2,17 +2,14 @@
 
 Live at [gianlucatruda.github.io/shader-gallery](https://gianlucatruda.github.io/shader-gallery)
 
-I wanted to be able to make, tweak, and share WebGL/GLSL shader art projects in a quick and modular way like [shadertoy.com](https://www.shadertoy.com/), but be able to run locally and deploy how I choose. 
+I wanted to be able to make, tweak, and share WebGL/GLSL shader art projects in a quick and modular way like [shadertoy.com](https://www.shadertoy.com/), but be able to run locally and deploy how I choose.
 
 This setup allows multiple shader examples loaded from the `frag/` directory, hash-based URL routing to indicate the current shader, live reloading, and a robust code editor (based on CodeMirror) with built-in error validation and an optional Vim keybindings mode.
 
 This project is a simple, extensiple "vanilla" static site. The project uses multiple shader examples stored in the `frag/` directory (along with a fixed `vertexShader.glsl`). Shader editing is live—changes in the integrated CodeMirror editor will update the shader immediately (after validation) on a high-DPI, responsive canvas.
 
-
 <img height="350" alt="SCR-20250612-prdu" src="https://github.com/user-attachments/assets/2c9524d1-c5f4-4a75-b57d-8759efd95218" />
 <img height="350" alt="SCR-20250612-prht" src="https://github.com/user-attachments/assets/1b8546d8-4917-4369-9526-b873efe1da1a" />
-
-
 
 I mimicked the Shadertoy API, so any straightforward shaders (with no assets) from there can be copy-pasted to and from this project in a `/frag/<shadername>.glsl` file:
 
@@ -39,5 +36,3 @@ void main() {
 ```
 
 You can easily serve this project with just about any simple server. I like using `npx live-server` to have live reloading when I modify any files.
-
-
