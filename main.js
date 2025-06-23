@@ -1,5 +1,3 @@
-console.log("Main.js");
-
 async function fetchShaderList() {
   const response = await fetch('frag/manifest.json');
   if (!response.ok) {
@@ -85,7 +83,7 @@ async function loadShaderProgram(index) {
 
 	// Reset time for the new shader.
 	startTime = performance.now();
-	
+
 	// Apply initial uniform values.
 	gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 
@@ -103,10 +101,15 @@ async function loadShaderProgram(index) {
 
 async function init() {
 	canvas = document.getElementById('myCanvas');
-	gl = canvas.getContext('webgl');
+	gl = canvas.getContext('webgl2');
+	console.info("Using WebGL2");
 	if (!gl) {
-		alert('WebGL not supported by this browser.');
-		return;
+		console.warn("WebGL2 not supported. Defaulting to WebGL");
+		gl = canvas.getContext('webgl');
+		if (!gl) {
+			alert('WebGL not supported by this browser.');
+			return;
+		}
 	}
 
 	// Adjust for high DPI devices
@@ -214,37 +217,37 @@ async function init() {
 	}
 
 	requestAnimationFrame(render);
-	
+
 	// Initialize highlight.js (moved from inline script)
 	hljs.highlightAll();
 }
 
 async function updateShaderFromEditor() {
   const newFragmentShaderSource = editor.getValue();
-  
+
   // Use cached vertex shader source (or fetch if missing)
   let vertexSource = cachedVertexShaderSource;
   if (!vertexSource) {
     vertexSource = await fetchShader('vertexShader.glsl');
     cachedVertexShaderSource = vertexSource;
   }
-  
+
   // Attempt to compile the shaders
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, newFragmentShaderSource);
-  
+
   if (!vertexShader || !fragmentShader) {
     // Indicate an error with the shader code (red border)
     editor.getWrapperElement().style.border = '2px solid red';
     return;
   }
-  
+
   // Create new program and link
   const newProgram = gl.createProgram();
   gl.attachShader(newProgram, vertexShader);
   gl.attachShader(newProgram, fragmentShader);
   gl.linkProgram(newProgram);
-  
+
   // Handle linking errors
   if (!gl.getProgramParameter(newProgram, gl.LINK_STATUS)) {
     console.error(`Error linking shader program: ${gl.getProgramInfoLog(newProgram)}`);
@@ -252,25 +255,25 @@ async function updateShaderFromEditor() {
     gl.deleteProgram(newProgram);
     return;
   }
-  
+
   // Success: clear error indicator and update the program
   editor.getWrapperElement().style.border = '1px solid #333';
   gl.useProgram(newProgram);
-  
+
   // Rebind attributes and update uniform locations (same as in loadShaderProgram)
   const positionAttributeLocation = gl.getAttribLocation(newProgram, 'a_position');
   gl.enableVertexAttribArray(positionAttributeLocation);
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-  
+
   resolutionUniformLocation = gl.getUniformLocation(newProgram, 'iResolution');
   timeUniformLocation = gl.getUniformLocation(newProgram, 'iTime');
   mouseUniformLocation = gl.getUniformLocation(newProgram, 'iMouse');
-  
+
   // Reset time and update resolution uniform
   startTime = performance.now();
   gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-  
+
   // Switch to the new program
   program = newProgram;
 }
@@ -285,7 +288,7 @@ window.addEventListener('resize', () => {
 	// Set the actual canvas dimensions.
 	canvas.width = styleWidth * dpi;
 	canvas.height = styleHeight * dpi;
-	
+
 	// Update the WebGL viewport.
 	if (gl) {
 		gl.viewport(0, 0, canvas.width, canvas.height);
@@ -293,7 +296,7 @@ window.addEventListener('resize', () => {
 			gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 		}
 	}
-	
+
 	// Update CodeMirror editor dimensions, if applicable.
 	if (editor) {
 		// You may compute a new height or simply refresh.
