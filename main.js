@@ -14,6 +14,9 @@ let gl, canvas, vertexBuffer, program;
 let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
 let startTime = 0;
 let editor = null;
+let mouseX = 0;
+let mouseY = 0;
+let mouseDown = false;
 
 function getFullscreenElement() {
   return document.fullscreenElement || document.webkitFullscreenElement;
@@ -228,6 +231,37 @@ async function init() {
   // Adjust for high DPI devices.
   resizeCanvasToDisplay();
 
+  function updateMouse(e) {
+    const rect = canvas.getBoundingClientRect();
+    const dpiLocal = window.devicePixelRatio || 1;
+    mouseX = (e.clientX - rect.left) * dpiLocal;
+    mouseY = (rect.height - (e.clientY - rect.top)) * dpiLocal;
+  }
+
+  canvas.addEventListener("pointerdown", (e) => {
+    mouseDown = true;
+    updateMouse(e);
+    if (canvas.setPointerCapture) {
+      canvas.setPointerCapture(e.pointerId);
+    }
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!mouseDown) return;
+    updateMouse(e);
+  });
+
+  canvas.addEventListener("pointerup", (e) => {
+    mouseDown = false;
+    if (canvas.releasePointerCapture) {
+      canvas.releasePointerCapture(e.pointerId);
+    }
+  });
+
+  canvas.addEventListener("pointerleave", () => {
+    mouseDown = false;
+  });
+
   vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   const vertices = new Float32Array([
@@ -329,6 +363,13 @@ async function init() {
   function render(time) {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform1f(timeUniformLocation, (time - startTime) * 0.001); // time offset in seconds
+    if (mouseUniformLocation) {
+      if (mouseDown) {
+        gl.uniform2f(mouseUniformLocation, mouseX, mouseY);
+      } else {
+        gl.uniform2f(mouseUniformLocation, 0.0, 0.0);
+      }
+    }
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
