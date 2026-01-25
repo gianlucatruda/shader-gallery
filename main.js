@@ -15,6 +15,107 @@ let resolutionUniformLocation, timeUniformLocation, mouseUniformLocation;
 let startTime = 0;
 let editor = null;
 
+function getFullscreenElement() {
+  return document.fullscreenElement || document.webkitFullscreenElement;
+}
+
+function requestFullscreen(element) {
+  let result;
+  if (element.requestFullscreen) {
+    result = element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) {
+    result = element.webkitRequestFullscreen();
+  }
+  if (result && typeof result.then === "function") {
+    result.then(syncFullscreenStyles).catch(syncFullscreenStyles);
+  } else {
+    setTimeout(syncFullscreenStyles, 0);
+  }
+}
+
+function exitFullscreen() {
+  let result;
+  if (document.exitFullscreen) {
+    result = document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    result = document.webkitExitFullscreen();
+  }
+  if (result && typeof result.then === "function") {
+    result.then(syncFullscreenStyles).catch(syncFullscreenStyles);
+  } else {
+    setTimeout(syncFullscreenStyles, 0);
+  }
+}
+
+function resizeCanvasToDisplay() {
+  if (!canvas) return;
+  const dpi = window.devicePixelRatio || 1;
+  const styleWidth = parseFloat(
+    getComputedStyle(canvas).getPropertyValue("width"),
+  );
+  const styleHeight = parseFloat(
+    getComputedStyle(canvas).getPropertyValue("height"),
+  );
+  if (!Number.isFinite(styleWidth) || !Number.isFinite(styleHeight)) return;
+  canvas.width = styleWidth * dpi;
+  canvas.height = styleHeight * dpi;
+
+  if (gl) {
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (resolutionUniformLocation) {
+      gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+    }
+  }
+
+  if (editor) {
+    editor.setSize("100%", "100%");
+  }
+}
+
+function syncFullscreenStyles() {
+  if (!canvas) return;
+  const isFullscreen = Boolean(getFullscreenElement());
+  if (isFullscreen) {
+    canvas.style.border = "none";
+    canvas.style.outline = "none";
+  } else {
+    canvas.style.border = "";
+    canvas.style.outline = "";
+  }
+  if (document.body) {
+    document.body.classList.toggle("fullscreen-active", isFullscreen);
+  }
+}
+
+function handleFullscreenChange() {
+  syncFullscreenStyles();
+  resizeCanvasToDisplay();
+}
+
+async function navigateShader(offset) {
+  if (!Array.isArray(shaders) || shaders.length === 0) return;
+  currentShaderIndex =
+    (currentShaderIndex + offset + shaders.length) % shaders.length;
+  await loadShaderProgram(currentShaderIndex);
+  updateURL();
+}
+
+function handleFullscreenKeydown(event) {
+  if (getFullscreenElement() !== canvas) return;
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    void navigateShader(-1);
+    return;
+  }
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    void navigateShader(1);
+    return;
+  }
+  event.preventDefault();
+  exitFullscreen();
+}
+
 function updateURL() {
   try {
     // Remove the .glsl extension from the shader filename.
@@ -124,17 +225,8 @@ async function init() {
     }
   }
 
-  // Adjust for high DPI devices
-  let dpi = window.devicePixelRatio;
-  let style_height = +getComputedStyle(canvas)
-    .getPropertyValue("height")
-    .slice(0, -2);
-  let style_width = +getComputedStyle(canvas)
-    .getPropertyValue("width")
-    .slice(0, -2);
-  // Scale the canvas by the device pixel ratio, maintaining the aspect ratio.
-  canvas.setAttribute("width", style_width * dpi);
-  canvas.setAttribute("height", style_height * dpi);
+  // Adjust for high DPI devices.
+  resizeCanvasToDisplay();
 
   vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -173,17 +265,27 @@ async function init() {
 
   // Wire up navigation buttons
   document.getElementById("prev").addEventListener("click", async () => {
-    currentShaderIndex =
-      (currentShaderIndex - 1 + shaders.length) % shaders.length;
-    await loadShaderProgram(currentShaderIndex);
-    updateURL();
+    await navigateShader(-1);
   });
 
   document.getElementById("next").addEventListener("click", async () => {
-    currentShaderIndex = (currentShaderIndex + 1) % shaders.length;
-    await loadShaderProgram(currentShaderIndex);
-    updateURL();
+    await navigateShader(1);
   });
+
+  const fullscreenButton = document.getElementById("fullscreenToggle");
+  if (fullscreenButton) {
+    fullscreenButton.addEventListener("click", () => {
+      if (getFullscreenElement()) {
+        exitFullscreen();
+        return;
+      }
+      requestFullscreen(canvas);
+    });
+  }
+
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+  document.addEventListener("keydown", handleFullscreenKeydown);
 
   // Initialize CodeMirror on the shader editor textarea (only once)
   if (!editor) {
@@ -305,33 +407,7 @@ async function updateShaderFromEditor() {
 }
 
 window.addEventListener("resize", () => {
-  // Get the canvas element.
-  const canvas = document.getElementById("myCanvas");
-  let dpi = window.devicePixelRatio || 1;
-  // Get the computed style dimensions (assumes CSS controls width/height).
-  let styleWidth = parseFloat(
-    getComputedStyle(canvas).getPropertyValue("width"),
-  );
-  let styleHeight = parseFloat(
-    getComputedStyle(canvas).getPropertyValue("height"),
-  );
-  // Set the actual canvas dimensions.
-  canvas.width = styleWidth * dpi;
-  canvas.height = styleHeight * dpi;
-
-  // Update the WebGL viewport.
-  if (gl) {
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    if (resolutionUniformLocation) {
-      gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-    }
-  }
-
-  // Update CodeMirror editor dimensions, if applicable.
-  if (editor) {
-    // You may compute a new height or simply refresh.
-    editor.setSize("100%", "100%");
-  }
+  resizeCanvasToDisplay();
 });
 
 window.onload = init;

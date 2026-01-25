@@ -88,6 +88,28 @@
         margin-top: 10px;
       }
 
+      body.fullscreen-active #myCanvas {
+        border: none !important;
+      }
+
+      #fullscreenToggle svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.5;
+        pointer-events: none;
+      }
+
+      #myCanvas:fullscreen,
+      #myCanvas:-webkit-full-screen,
+      #myCanvas:-moz-full-screen {
+        width: 100vw;
+        height: 100vh;
+        max-height: none;
+        border: none !important;
+      }
+
       footer {
         align-self: stretch;
         text-align: center;
@@ -135,6 +157,19 @@
         ></div>
         <div id="navContainer">
           <button id="prev" style="margin: 10px">←</button>
+          <button
+            id="fullscreenToggle"
+            style="margin: 10px"
+            title="Fullscreen"
+            aria-label="Fullscreen"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+                stroke-linecap="square"
+              />
+            </svg>
+          </button>
           <button id="next" style="margin: 10px">→</button>
         </div>
       </div>
